@@ -63,7 +63,7 @@ function updateIsbnRecords(isbn, url) {
     });
     bulkCount++;
   } else {
-    logger("processed=" + testCounter);
+    console.log("processed=" + testCounter);
     bulkOps.execute({}, function () {
       setInterval(function () {
         if (callbacks == 0)
@@ -74,7 +74,7 @@ function updateIsbnRecords(isbn, url) {
   if (bulkCount == bulkTrigger) {
     bulkCount = 0;
     bulkOps.execute({}, function () {
-      logger("Queued Callbacks = " + callbacks);
+      console.log("Queued Callbacks = " + callbacks);
     });
     bulkOps = isbnList.initializeUnorderedBulkOp();
   }
