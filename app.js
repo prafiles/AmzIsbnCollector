@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var Agent = require('socks5-http-client/lib/Agent');
 var request = require('request');
 var cheerio = require('cheerio');
 
@@ -18,22 +19,26 @@ MongoClient.connect('mongodb://localhost:27017/experiment', function (err, db_ex
   bulkOps = isbnList.initializeUnorderedBulkOp();
   setInterval(function () {
     main(pageCount++);
-  }, 100);
+  }, 500);
 });
 
 function main(pageNo) {
   var options = {
     url: "http://www.amazon.in/gp/aw/s/ref=mh_976389031_is_s_stripbooks?ie=UTF8&n=976389031&page=" + pageNo + "&k=",
+    agentClass: Agent,
+    agentOptions: {
+      socksHost: 'localhost', // Defaults to 'localhost'.
+      socksPort: 9050 // Defaults to 1080.
+    },
     headers: {
       'User-Agent': 'Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3'
     },
-    timeout: 10000
   };
   request(options, function (error, response, body) {
     if (error) {
       console.log(error);
     } else if (response.statusCode == 200) {
-      pageParser(body)
+      pageParser(body);
       console.log("processedPageNo = " + pageNo);
     } else {
       console.log("Store returned with statusCode = " + response.statusCode);
@@ -57,6 +62,7 @@ function updateIsbnRecords(isbn, url) {
     callbacks--;
     testCounter++;
     bulkOps.insert({
+      '_id': isbn,
       'isbn': isbn,
       'crawlTime': new Date(),
       'url': url
