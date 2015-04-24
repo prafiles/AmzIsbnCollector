@@ -50,6 +50,7 @@ function pageParser(body) {
   var $ = cheerio.load(body);
   var arr = $('div.toTheEdge.productList');
   arr.each(function (index, val) {
+    callbacks++;
     var url = $(val).find('div.productContainer a').attr('href');
     var isbn10 = url.match(/[^0-9]([0-9]{9}[Xx0-9])[^0-9]?/);
     isbn10 = isbn10 && isbn10[1] ? isbn10[1] : null;
@@ -68,14 +69,14 @@ function updateIsbnRecords(isbn, url) {
       'url': url
     });
     bulkCount++;
-  } else {
-    console.log("processed=" + testCounter);
-    bulkOps.execute({}, function () {
-      setInterval(function () {
-        if (callbacks == 0)
-          process.exit(0);
-      }, 1000)
-    });
+  //} else {
+  //  console.log("processed=" + testCounter);
+  //  bulkOps.execute({}, function () {
+  //    setInterval(function () {
+  //      if (callbacks == 0)
+  //        process.exit(0);
+  //    }, 1000)
+  //  });
   }
   if (bulkCount == bulkTrigger) {
     bulkCount = 0;
