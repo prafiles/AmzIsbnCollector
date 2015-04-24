@@ -38,17 +38,17 @@ function main(pageNo) {
     if (error) {
       console.log(error);
     } else if (response.statusCode == 200) {
-      pageParser(body);
-      console.log("processedPageNo = " + pageNo);
+      pageParser(body, pageNo);
     } else {
       console.log("Store returned with statusCode = " + response.statusCode);
     }
   });
 }
 
-function pageParser(body) {
+function pageParser(body, pageNo) {
   var $ = cheerio.load(body);
   var arr = $('div.toTheEdge.productList');
+  console.log("processedPageNo = " + pageNo + " arrLength = " + arr.length);
   arr.each(function (index, val) {
     callbacks++;
     var url = $(val).find('div.productContainer a').attr('href');
@@ -69,14 +69,14 @@ function updateIsbnRecords(isbn, url) {
       'url': url
     });
     bulkCount++;
-  //} else {
-  //  console.log("processed=" + testCounter);
-  //  bulkOps.execute({}, function () {
-  //    setInterval(function () {
-  //      if (callbacks == 0)
-  //        process.exit(0);
-  //    }, 1000)
-  //  });
+    //} else {
+    //  console.log("processed=" + testCounter);
+    //  bulkOps.execute({}, function () {
+    //    setInterval(function () {
+    //      if (callbacks == 0)
+    //        process.exit(0);
+    //    }, 1000)
+    //  });
   }
   if (bulkCount == bulkTrigger) {
     bulkCount = 0;
